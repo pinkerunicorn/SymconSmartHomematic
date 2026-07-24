@@ -1,0 +1,12 @@
+{
+    "id": "{A3F7C2B1-D84E-4F91-B6A2-0C5E9D3F8712}",
+    "author": "Florian Graßinger",
+    "name": "SymconSmartHomematic",
+    "url": "https://github.com/pinkerunicorn/SymconSmartHomematic",
+    "compatibility": {
+        "version": "8.0"
+    },
+    "version": "1.0",
+    "build": 0,
+    "date": 0
+}
