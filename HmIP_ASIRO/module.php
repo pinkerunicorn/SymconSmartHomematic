@@ -45,16 +45,43 @@ class HmIP_ASIRO extends IPSModuleStrict
         $this->RegisterPropertyInteger('DefaultDuration', 0); // 0 = dauerhaft
 
         // Status-Variablen
-        $this->RegisterVariableBoolean('IsActive', 'Sirene aktiv', '', 1);
+        $this->RegisterVariableBoolean('IsActive', 'Sirene aktiv', [
+            'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
+            'ICON'         => 'Alert'
+        ], 1);
         $this->EnableAction('IsActive');
 
-        $this->RegisterVariableInteger('AcousticSignal', 'Akustik', '', 2);
+        $this->RegisterVariableInteger('AcousticSignal', 'Akustik', [
+            'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
+            'ICON'         => 'Speaker',
+            'ASSOCIATIONS' => [
+                [0, 'Kein Ton', '', 0x888888],
+                [1, 'Freq. steigend', '', 0x00AAFF],
+                [2, 'Freq. fallend', '', 0x0066FF],
+                [3, 'Freq. steig./fallend', '', 0x0044CC],
+                [4, 'Freq. tief/hoch', '', 0x00CCAA],
+                [5, 'Freq. tief', '', 0x004488],
+                [6, 'Freq. hoch', '', 0x0088FF]
+            ]
+        ], 2);
         $this->EnableAction('AcousticSignal');
 
-        $this->RegisterVariableInteger('OpticalSignal', 'Optik', '', 3);
+        $this->RegisterVariableInteger('OpticalSignal', 'Optik', [
+            'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
+            'ICON'         => 'Bulb',
+            'ASSOCIATIONS' => [
+                [0, 'Kein Licht', '', 0x888888],
+                [1, 'Blinken', '', 0xFFAA00],
+                [2, 'Blitzen', '', 0xFF4400]
+            ]
+        ], 3);
         $this->EnableAction('OpticalSignal');
 
-        $this->RegisterVariableInteger('Duration', 'Dauer (Sekunden)', '', 4);
+        $this->RegisterVariableInteger('Duration', 'Dauer (Sekunden)', [
+            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+            'ICON'         => 'Clock',
+            'SUFFIX'       => ' s'
+        ], 4);
     }
 
     public function ApplyChanges(): void
@@ -77,8 +104,6 @@ class HmIP_ASIRO extends IPSModuleStrict
         if ($this->GetValue('OpticalSignal') === 0 && $this->ReadPropertyInteger('DefaultOptical') > 0) {
             $this->SetValue('OpticalSignal', $this->ReadPropertyInteger('DefaultOptical'));
         }
-
-        $this->SetupVariablePresentations();
     }
 
     public function RequestAction(string $Ident, mixed $Value): void
@@ -183,44 +208,6 @@ class HmIP_ASIRO extends IPSModuleStrict
     // =========================================================================
     // Hilfsfunktionen
     // =========================================================================
-
-    private function SetupVariablePresentations(): void
-    {
-        IPS_SetVariableCustomPresentation($this->GetIDForIdent('IsActive'), [
-            'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
-            'ICON'         => 'Alert'
-        ]);
-
-        IPS_SetVariableCustomPresentation($this->GetIDForIdent('AcousticSignal'), [
-            'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
-            'ICON'         => 'Speaker',
-            'ASSOCIATIONS' => [
-                [0, 'Kein Ton', '', 0x888888],
-                [1, 'Freq. steigend', '', 0x00AAFF],
-                [2, 'Freq. fallend', '', 0x0066FF],
-                [3, 'Freq. steig./fallend', '', 0x0044CC],
-                [4, 'Freq. tief/hoch', '', 0x00CCAA],
-                [5, 'Freq. tief', '', 0x004488],
-                [6, 'Freq. hoch', '', 0x0088FF]
-            ]
-        ]);
-
-        IPS_SetVariableCustomPresentation($this->GetIDForIdent('OpticalSignal'), [
-            'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
-            'ICON'         => 'Bulb',
-            'ASSOCIATIONS' => [
-                [0, 'Kein Licht', '', 0x888888],
-                [1, 'Blinken', '', 0xFFAA00],
-                [2, 'Blitzen', '', 0xFF4400]
-            ]
-        ]);
-
-        IPS_SetVariableCustomPresentation($this->GetIDForIdent('Duration'), [
-            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-            'ICON'         => 'Clock',
-            'SUFFIX'       => ' s'
-        ]);
-    }
 
     private function CheckInstance(int $instID): bool
     {
