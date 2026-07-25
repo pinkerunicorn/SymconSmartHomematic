@@ -51,16 +51,43 @@ class HmIP_MP3P extends IPSModuleStrict
         $this->RegisterPropertyInteger('DefaultVolume', 80);
 
         // Status-Variablen (für Tile-UI / Monitoring)
-        $this->RegisterVariableBoolean('IsPlaying', 'Spielt gerade', '', 1);
+        $this->RegisterVariableBoolean('IsPlaying', 'Spielt gerade', [
+            'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
+            'ICON'         => 'Music'
+        ], 1);
 
-        $this->RegisterVariableInteger('Volume', 'Lautstärke', '', 2);
+        $this->RegisterVariableInteger('Volume', 'Lautstärke', [
+            'PRESENTATION' => VARIABLE_PRESENTATION_SLIDER,
+            'ICON'         => 'Speaker',
+            'SUFFIX'       => ' %',
+            'MINVALUE'     => 0,
+            'MAXVALUE'     => 100
+        ], 2);
         $this->EnableAction('Volume');
 
-        $this->RegisterVariableString('CurrentTrack', 'Aktueller Track', '', 3);
+        $this->RegisterVariableString('CurrentTrack', 'Aktueller Track', [
+            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+            'ICON'         => 'Music'
+        ], 3);
 
-        $this->RegisterVariableBoolean('LightActive', 'LED aktiv', '', 4);
+        $this->RegisterVariableBoolean('LightActive', 'LED aktiv', [
+            'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
+            'ICON'         => 'Bulb'
+        ], 4);
 
-        $this->RegisterVariableInteger('LightColor', 'LED Farbe', '', 5);
+        if (!IPS_VariableProfileExists('HmIP.MP3P.Color')) {
+            IPS_CreateVariableProfile('HmIP.MP3P.Color', 1);
+            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 0, 'Aus',      '',  0x000000);
+            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 1, 'Blau',     '', 0x0000FF);
+            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 2, 'Grün',     '', 0x00FF00);
+            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 3, 'Türkis',   '', 0x00FFFF);
+            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 4, 'Rot',      '', 0xFF0000);
+            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 5, 'Violett',  '', 0x8800FF);
+            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 6, 'Gelb',     '', 0xFFFF00);
+            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 7, 'Weiß',     '', 0xFFFFFF);
+        }
+
+        $this->RegisterVariableInteger('LightColor', 'LED Farbe', 'HmIP.MP3P.Color', 5);
         $this->EnableAction('LightColor');
     }
 
@@ -86,8 +113,6 @@ class HmIP_MP3P extends IPSModuleStrict
         if ($this->GetValue('Volume') === 0) {
             $this->SetValue('Volume', $this->ReadPropertyInteger('DefaultVolume'));
         }
-
-        $this->SetupVariablePresentations();
     }
 
     public function RequestAction(string $Ident, mixed $Value): void
@@ -232,47 +257,6 @@ class HmIP_MP3P extends IPSModuleStrict
     // =========================================================================
     // Hilfsfunktionen
     // =========================================================================
-
-    private function SetupVariablePresentations(): void
-    {
-        IPS_SetVariableCustomPresentation($this->GetIDForIdent('IsPlaying'), [
-            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-            'ICON'         => 'Music'
-        ]);
-
-        IPS_SetVariableCustomPresentation($this->GetIDForIdent('Volume'), [
-            'PRESENTATION' => VARIABLE_PRESENTATION_SLIDER,
-            'ICON'         => 'Speaker',
-            'SUFFIX'       => ' %',
-            'MINVALUE'     => 0,
-            'MAXVALUE'     => 100
-        ]);
-
-        IPS_SetVariableCustomPresentation($this->GetIDForIdent('CurrentTrack'), [
-            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-            'ICON'         => 'Music'
-        ]);
-
-        IPS_SetVariableCustomPresentation($this->GetIDForIdent('LightActive'), [
-            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-            'ICON'         => 'Bulb'
-        ]);
-
-        IPS_SetVariableCustomPresentation($this->GetIDForIdent('LightColor'), [
-            'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
-            'ICON'         => 'Bulb',
-            'ASSOCIATIONS' => [
-                [0, 'Aus',      '',  0x000000],
-                [1, 'Blau',     '', 0x0000FF],
-                [2, 'Grün',     '', 0x00FF00],
-                [3, 'Türkis',   '', 0x00FFFF],
-                [4, 'Rot',      '', 0xFF0000],
-                [5, 'Violett',  '', 0x8800FF],
-                [6, 'Gelb',     '', 0xFFFF00],
-                [7, 'Weiß',     '', 0xFFFFFF]
-            ]
-        ]);
-    }
 
     private function CheckInstance(int $instID, string $label): bool
     {

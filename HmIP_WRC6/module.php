@@ -94,6 +94,25 @@ class HmIP_WRC6 extends IPSModuleStrict
         $this->RegisterPropertyInteger('AuxInput_InstID', 0);
         $this->RegisterPropertyString('AuxInput_Label', 'Nebenstelleneingang');
 
+        // --- Variable Profile ---
+        if (!IPS_VariableProfileExists('HmIP.WRC6.ButtonState')) {
+            IPS_CreateVariableProfile('HmIP.WRC6.ButtonState', 1);
+            IPS_SetVariableProfileAssociation('HmIP.WRC6.ButtonState', 0, 'Kein Druck', '', 0x888888);
+            IPS_SetVariableProfileAssociation('HmIP.WRC6.ButtonState', 1, 'Kurz',       '', 0x00AA00);
+            IPS_SetVariableProfileAssociation('HmIP.WRC6.ButtonState', 2, 'Lang',       '', 0xFF6600);
+        }
+
+        if (!IPS_VariableProfileExists('HmIP.WRC6.Color')) {
+            IPS_CreateVariableProfile('HmIP.WRC6.Color', 1);
+            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 0, 'Aus',     '', 0x000000);
+            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 1, 'Blau',    '', 0x0000FF);
+            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 2, 'Grün',    '', 0x00FF00);
+            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 3, 'Türkis',  '', 0x00FFFF);
+            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 4, 'Rot',     '', 0xFF0000);
+            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 5, 'Violett', '', 0x8800FF);
+            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 6, 'Gelb',    '', 0xFFFF00);
+            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 7, 'Weiß',    '', 0xFFFFFF);
+        }
     }
 
     public function ApplyChanges(): void
@@ -119,9 +138,9 @@ class HmIP_WRC6 extends IPSModuleStrict
             if ($btnInstID > 1 && @IPS_InstanceExists($btnInstID)) {
                 $this->RegisterReference($btnInstID);
                 $this->SubscribeButtonChannel($btnInstID, $i);
-                $this->MaintainVariable($btnIdent, "🔘 {$label}", 1, '', $i * 3 - 2, true);
+                $this->MaintainVariable($btnIdent, "🔘 {$label}", 1, 'HmIP.WRC6.ButtonState', $i * 3 - 2, true);
             } else {
-                $this->MaintainVariable($btnIdent, "Taste {$i}", 1, '', $i * 3 - 2, false);
+                $this->MaintainVariable($btnIdent, "Taste {$i}", 1, 'HmIP.WRC6.ButtonState', $i * 3 - 2, false);
             }
 
             // LED-Instanz
@@ -130,10 +149,10 @@ class HmIP_WRC6 extends IPSModuleStrict
 
             if ($ledInstID > 1 && @IPS_InstanceExists($ledInstID)) {
                 $this->RegisterReference($ledInstID);
-                $this->MaintainVariable($ledIdent, "💡 LED {$label}", 1, '', $i * 3 - 1, true);
+                $this->MaintainVariable($ledIdent, "💡 LED {$label}", 1, 'HmIP.WRC6.Color', $i * 3 - 1, true);
                 $this->EnableAction($ledIdent);
             } else {
-                $this->MaintainVariable($ledIdent, "LED Taste {$i}", 1, '', $i * 3 - 1, false);
+                $this->MaintainVariable($ledIdent, "LED Taste {$i}", 1, 'HmIP.WRC6.Color', $i * 3 - 1, false);
             }
         }
 
@@ -141,7 +160,10 @@ class HmIP_WRC6 extends IPSModuleStrict
         $switchInstID = $this->ReadPropertyInteger('Switch_InstID');
         if ($switchInstID > 1 && @IPS_InstanceExists($switchInstID)) {
             $this->RegisterReference($switchInstID);
-            $this->MaintainVariable('Switch_State', '🔌 Schaltausgang (Relais)', 0, '', 19, true);
+            $this->MaintainVariable('Switch_State', '🔌 Schaltausgang (Relais)', 0, [
+                'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
+                'ICON'         => 'Power'
+            ], 19, true);
             $this->EnableAction('Switch_State');
 
             // Statusvariable des Schaltausgangs abonnieren
@@ -162,15 +184,13 @@ class HmIP_WRC6 extends IPSModuleStrict
 
         if ($auxInstID > 1 && @IPS_InstanceExists($auxInstID)) {
             $this->RegisterReference($auxInstID);
-            $this->MaintainVariable('AuxInput_State', "🔔 {$auxLabel}", 1, '', 20, true);
+            $this->MaintainVariable('AuxInput_State', "🔔 {$auxLabel}", 1, 'HmIP.WRC6.ButtonState', 20, true);
 
             // PRESS_SHORT / PRESS_LONG des Nebenstelleneingangs abonnieren
             $this->SubscribeButtonChannel($auxInstID, 0); // 0 = Aux-Kanal
         } else {
-            $this->MaintainVariable('AuxInput_State', 'Nebenstelleneingang', 1, '', 20, false);
+            $this->MaintainVariable('AuxInput_State', 'Nebenstelleneingang', 1, 'HmIP.WRC6.ButtonState', 20, false);
         }
-
-        $this->SetupVariablePresentations();
     }
 
     /**
@@ -397,59 +417,6 @@ class HmIP_WRC6 extends IPSModuleStrict
     // =========================================================================
     // Hilfsfunktionen
     // =========================================================================
-
-    private function SetupVariablePresentations(): void
-    {
-        for ($i = 1; $i <= self::NUM_BUTTONS; $i++) {
-            $btnIdent = "Button_{$i}";
-            if (@IPS_GetObjectIDByIdent($btnIdent, $this->InstanceID)) {
-                IPS_SetVariableCustomPresentation($this->GetIDForIdent($btnIdent), [
-                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-                    'ASSOCIATIONS' => [
-                        [0, 'Kein Druck', '', 0x888888],
-                        [1, 'Kurz',       '', 0x00AA00],
-                        [2, 'Lang',       '', 0xFF6600]
-                    ]
-                ]);
-            }
-
-            $ledIdent = "LED_{$i}";
-            if (@IPS_GetObjectIDByIdent($ledIdent, $this->InstanceID)) {
-                IPS_SetVariableCustomPresentation($this->GetIDForIdent($ledIdent), [
-                    'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
-                    'ICON'         => 'Bulb',
-                    'ASSOCIATIONS' => [
-                        [0, 'Aus',     '', 0x000000],
-                        [1, 'Blau',    '', 0x0000FF],
-                        [2, 'Grün',    '', 0x00FF00],
-                        [3, 'Türkis',  '', 0x00FFFF],
-                        [4, 'Rot',     '', 0xFF0000],
-                        [5, 'Violett', '', 0x8800FF],
-                        [6, 'Gelb',    '', 0xFFFF00],
-                        [7, 'Weiß',    '', 0xFFFFFF]
-                    ]
-                ]);
-            }
-        }
-
-        if (@IPS_GetObjectIDByIdent('Switch_State', $this->InstanceID)) {
-            IPS_SetVariableCustomPresentation($this->GetIDForIdent('Switch_State'), [
-                'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
-                'ICON'         => 'Power'
-            ]);
-        }
-
-        if (@IPS_GetObjectIDByIdent('AuxInput_State', $this->InstanceID)) {
-            IPS_SetVariableCustomPresentation($this->GetIDForIdent('AuxInput_State'), [
-                'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-                'ASSOCIATIONS' => [
-                    [0, 'Kein Druck', '', 0x888888],
-                    [1, 'Kurz',       '', 0x00AA00],
-                    [2, 'Lang',       '', 0xFF6600]
-                ]
-            ]);
-        }
-    }
 
     private function BuildLEDParam(int $color, int $mode, int $brightness, int $dv): string
     {
