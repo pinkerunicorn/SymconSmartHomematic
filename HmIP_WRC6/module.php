@@ -138,9 +138,15 @@ class HmIP_WRC6 extends IPSModuleStrict
             if ($btnInstID > 1 && @IPS_InstanceExists($btnInstID)) {
                 $this->RegisterReference($btnInstID);
                 $this->SubscribeButtonChannel($btnInstID, $i);
-                $this->MaintainVariable($btnIdent, "🔘 {$label}", 1, 'HmIP.WRC6.ButtonState', $i * 3 - 2, true);
+                $this->MaintainVariable($btnIdent, "🔘 {$label}", 1, [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'PROFILE'      => 'HmIP.WRC6.ButtonState',
+                ], $i * 3 - 2, true);
             } else {
-                $this->MaintainVariable($btnIdent, "Taste {$i}", 1, 'HmIP.WRC6.ButtonState', $i * 3 - 2, false);
+                $this->MaintainVariable($btnIdent, "Taste {$i}", 1, [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                    'PROFILE'      => 'HmIP.WRC6.ButtonState',
+                ], $i * 3 - 2, false);
             }
 
             // LED-Instanz
@@ -184,12 +190,18 @@ class HmIP_WRC6 extends IPSModuleStrict
 
         if ($auxInstID > 1 && @IPS_InstanceExists($auxInstID)) {
             $this->RegisterReference($auxInstID);
-            $this->MaintainVariable('AuxInput_State', "🔔 {$auxLabel}", 1, 'HmIP.WRC6.ButtonState', 20, true);
+            $this->MaintainVariable('AuxInput_State', "🔔 {$auxLabel}", 1, [
+                'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                'PROFILE'      => 'HmIP.WRC6.ButtonState',
+            ], 20, true);
 
             // PRESS_SHORT / PRESS_LONG des Nebenstelleneingangs abonnieren
             $this->SubscribeButtonChannel($auxInstID, 0); // 0 = Aux-Kanal
         } else {
-            $this->MaintainVariable('AuxInput_State', 'Nebenstelleneingang', 1, 'HmIP.WRC6.ButtonState', 20, false);
+            $this->MaintainVariable('AuxInput_State', 'Nebenstelleneingang', 1, [
+                'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+                'PROFILE'      => 'HmIP.WRC6.ButtonState',
+            ], 20, false);
         }
     }
 

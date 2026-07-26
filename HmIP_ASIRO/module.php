@@ -70,10 +70,16 @@ class HmIP_ASIRO extends IPSModuleStrict
         ], 1);
         $this->EnableAction('IsActive');
 
-        $this->RegisterVariableInteger('AcousticSignal', 'Akustik', 'HmIP.ASIRO.Acoustic', 2);
+        $this->RegisterVariableInteger('AcousticSignal', 'Akustik', [
+            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+            'PROFILE'      => 'HmIP.ASIRO.Acoustic',
+        ], 2);
         $this->EnableAction('AcousticSignal');
 
-        $this->RegisterVariableInteger('OpticalSignal', 'Optik', 'HmIP.ASIRO.Optical', 3);
+        $this->RegisterVariableInteger('OpticalSignal', 'Optik', [
+            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+            'PROFILE'      => 'HmIP.ASIRO.Optical',
+        ], 3);
         $this->EnableAction('OpticalSignal');
 
         $this->RegisterVariableInteger('Duration', 'Dauer (Sekunden)', [

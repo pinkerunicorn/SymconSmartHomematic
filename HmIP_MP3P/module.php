@@ -87,7 +87,10 @@ class HmIP_MP3P extends IPSModuleStrict
             IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 7, 'Weiß',     '', 0xFFFFFF);
         }
 
-        $this->RegisterVariableInteger('LightColor', 'LED Farbe', 'HmIP.MP3P.Color', 5);
+        $this->RegisterVariableInteger('LightColor', 'LED Farbe', [
+            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+            'PROFILE'      => 'HmIP.MP3P.Color',
+        ], 5);
         $this->EnableAction('LightColor');
     }
 
