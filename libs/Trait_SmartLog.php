@@ -35,7 +35,7 @@ trait SmartLog_Trait
         if (is_array($slogInstances) && count($slogInstances) > 0) {
             @SLOG_Log($slogInstances[0], $level, $source, $message, $details);
         } else {
-            IPS_LogMessage('SmartHomematic', $source . ': ' . $message);
+            IPS_LogMessage('SmartVillaKunterbunt', $source . ': ' . $message);
         }
     }
 
