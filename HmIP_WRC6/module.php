@@ -95,12 +95,6 @@ class HmIP_WRC6 extends IPSModuleStrict
         $this->RegisterPropertyString('AuxInput_Label', 'Nebenstelleneingang');
 
         // --- Variable Profile ---
-        if (!IPS_VariableProfileExists('HmIP.WRC6.ButtonState')) {
-            IPS_CreateVariableProfile('HmIP.WRC6.ButtonState', 1);
-            IPS_SetVariableProfileAssociation('HmIP.WRC6.ButtonState', 0, 'Kein Druck', '', 0x888888);
-            IPS_SetVariableProfileAssociation('HmIP.WRC6.ButtonState', 1, 'Kurz',       '', 0x00AA00);
-            IPS_SetVariableProfileAssociation('HmIP.WRC6.ButtonState', 2, 'Lang',       '', 0xFF6600);
-        }
 
         if (!IPS_VariableProfileExists('HmIP.WRC6.Color')) {
             IPS_CreateVariableProfile('HmIP.WRC6.Color', 1);
@@ -129,6 +123,21 @@ class HmIP_WRC6 extends IPSModuleStrict
             }
         }
 
+        $buttonOptions = json_encode([
+            ['Value' => 0, 'Caption' => 'Nicht gedrückt', 'IconValue' => 'Information', 'IconActive' => false, 'ColorActive' => false, 'ColorDisplay' => -1, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => -1],
+            ['Value' => 1, 'Caption' => 'Gedrückt', 'IconValue' => 'Information', 'IconActive' => true, 'ColorActive' => true, 'ColorDisplay' => 0x0088FF, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => 0x0088FF]
+        ]);
+        $customPresentation = [
+            'PRESENTATION' => '{3319437D-7CDE-699D-750A-3C6A3841FA75}',
+            'ICON' => '',
+            'COLOR' => -1,
+            'CONTENT_COLOR' => -1,
+            'DISPLAY_TYPE' => 0,
+            'PREVIEW_STYLE' => 1,
+            'SHOW_PREVIEW' => true,
+            'OPTIONS' => $buttonOptions
+        ];
+
         // --- Tasten-Variablen und Subscriptions ---
         for ($i = 1; $i <= self::NUM_BUTTONS; $i++) {
             $btnInstID = $this->ReadPropertyInteger("Button{$i}_InstID");
@@ -139,13 +148,12 @@ class HmIP_WRC6 extends IPSModuleStrict
                 $this->RegisterReference($btnInstID);
                 $this->SubscribeButtonChannel($btnInstID, $i);
                 $this->MaintainVariable($btnIdent, "🔘 {$label}", 1, [
-                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-                    'PROFILE'      => 'HmIP.WRC6.ButtonState',
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION
                 ], $i * 3 - 2, true);
+                IPS_SetVariableCustomPresentation($this->GetIDForIdent($btnIdent), $customPresentation);
             } else {
                 $this->MaintainVariable($btnIdent, "Taste {$i}", 1, [
-                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-                    'PROFILE'      => 'HmIP.WRC6.ButtonState',
+                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION
                 ], $i * 3 - 2, false);
             }
 
@@ -191,16 +199,15 @@ class HmIP_WRC6 extends IPSModuleStrict
         if ($auxInstID > 1 && @IPS_InstanceExists($auxInstID)) {
             $this->RegisterReference($auxInstID);
             $this->MaintainVariable('AuxInput_State', "🔔 {$auxLabel}", 1, [
-                'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-                'PROFILE'      => 'HmIP.WRC6.ButtonState',
+                'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION
             ], 20, true);
+            IPS_SetVariableCustomPresentation($this->GetIDForIdent('AuxInput_State'), $customPresentation);
 
             // PRESS_SHORT / PRESS_LONG des Nebenstelleneingangs abonnieren
             $this->SubscribeButtonChannel($auxInstID, 0); // 0 = Aux-Kanal
         } else {
             $this->MaintainVariable('AuxInput_State', 'Nebenstelleneingang', 1, [
-                'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-                'PROFILE'      => 'HmIP.WRC6.ButtonState',
+                'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION
             ], 20, false);
         }
     }
