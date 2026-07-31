@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/Trait_SmartLog.php';
+require_once __DIR__ . '/../libs/Trait_DeviceAvailability.php';
 
 /**
  * HmIP_WRC6 – Abstraktionsschicht für den HomeMatic IP Wandtaster 6-fach (HmIP-WRC6-230)
@@ -46,6 +47,7 @@ require_once __DIR__ . '/../libs/Trait_SmartLog.php';
 class HmIP_WRC6 extends IPSModuleStrict
 {
     use SmartLog_Trait;
+    use DeviceAvailability_Trait;
 
     // Anzahl der Tasten / LED-Kanäle
     private const NUM_BUTTONS = 6;
@@ -107,11 +109,26 @@ class HmIP_WRC6 extends IPSModuleStrict
             IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 6, 'Gelb',    '', 0xFFFF00);
             IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 7, 'Weiß',    '', 0xFFFFFF);
         }
+
+        $this->DA_RegisterAvailability(900);
     }
 
     public function ApplyChanges(): void
     {
         parent::ApplyChanges();
+
+        // Validierung
+        $hasInstance = false;
+        for ($i = 1; $i <= self::NUM_BUTTONS; $i++) {
+            if ($this->ReadPropertyInteger("Button{$i}_InstID") > 0 || $this->ReadPropertyInteger("LED{$i}_InstID") > 0) {
+                $hasInstance = true;
+                break;
+            }
+        }
+        if (!$hasInstance && $this->ReadPropertyInteger('Switch_InstID') <= 0 && $this->ReadPropertyInteger('AuxInput_InstID') <= 0) {
+            $this->SetStatus(104);
+            return;
+        }
 
         // Alle alten Referenzen und Messages aufräumen
         foreach ($this->GetReferenceList() as $refID) {
@@ -210,6 +227,8 @@ class HmIP_WRC6 extends IPSModuleStrict
                 'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION
             ], 20, false);
         }
+
+        $this->DA_ApplyPresentation();
     }
 
     /**
@@ -234,6 +253,7 @@ class HmIP_WRC6 extends IPSModuleStrict
     public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
     {
         if ($Message !== VM_UPDATE) return;
+        $this->DA_SetAvailable(true);
 
         $value = $Data[0];
 
@@ -386,7 +406,9 @@ class HmIP_WRC6 extends IPSModuleStrict
         $this->SLogInfo('SetSwitch: Schaltausgang → ' . ($state ? 'EIN' : 'AUS'));
         try {
             HM_WriteValueBoolean($instID, 'STATE', $state);
+            $this->DA_SetAvailable(true);
         } catch (\Throwable $e) {
+            $this->DA_SetAvailable(false, $e->getMessage());
             $this->SLogError('SetSwitch fehlgeschlagen: ' . $e->getMessage());
         }
         $this->SetValue('Switch_State', $state);
@@ -417,6 +439,11 @@ class HmIP_WRC6 extends IPSModuleStrict
 
     public function RequestAction(string $Ident, mixed $Value): void
     {
+        if ($Ident === 'DA_Watchdog') {
+            $this->DA_HandleWatchdog();
+            return;
+        }
+
         if (str_starts_with($Ident, 'LED_')) {
             $button = (int)substr($Ident, 4);
             $color  = (int)$Value;
@@ -458,7 +485,9 @@ class HmIP_WRC6 extends IPSModuleStrict
     {
         try {
             HM_WriteValueString($instID, 'COMBINED_PARAMETER', $param);
+            $this->DA_SetAvailable(true);
         } catch (\Throwable $e) {
+            $this->DA_SetAvailable(false, $e->getMessage());
             $this->SLogError("HM_WriteValueString fehlgeschlagen: " . $e->getMessage(), $param);
         }
     }
@@ -491,6 +520,13 @@ class HmIP_WRC6 extends IPSModuleStrict
         }
 
         $formData = [
+            'status' => [
+                [ 'code' => 104, 'icon' => 'inactive', 'caption' => 'Keine Instanz konfiguriert' ],
+                [ 'code' => 201, 'icon' => 'inactive', 'caption' => 'Gerät nicht erreichbar' ],
+                [ 'code' => 202, 'icon' => 'inactive', 'caption' => 'Keine Antwort vom Gerät' ],
+                [ 'code' => 203, 'icon' => 'error', 'caption' => 'Gerätefehler' ],
+                [ 'code' => 204, 'icon' => 'error', 'caption' => 'Netzwerkfehler' ]
+            ],
             'elements' => [
                 ['type' => 'Label', 'bold' => true, 'caption' => 'HomeMatic IP Wandtaster 6-fach (HmIP-WRC6-230)'],
                 ['type' => 'Label', 'caption' => 'Die 6 Tastenkanäle reagieren auf PRESS_SHORT und PRESS_LONG. Die 6 LED-Kanäle steuern die Status-LEDs neben jeder Taste.'],
@@ -534,6 +570,12 @@ class HmIP_WRC6 extends IPSModuleStrict
             ],
             'actions' => [
                 ['type' => 'Label', 'bold' => true, 'caption' => 'Test-Aktionen'],
+                [
+                    'type' => 'Button',
+                    'caption' => 'Verbindung testen',
+                    'onClick' => 'echo "Verbindungstest";',
+                    'icon' => 'Network'
+                ],
                 [
                     'type'  => 'RowLayout',
                     'items' => [

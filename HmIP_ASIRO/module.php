@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/Trait_SmartLog.php';
+require_once __DIR__ . '/../libs/Trait_DeviceAvailability.php';
 
 /**
  * HmIP_ASIRO – Abstraktionsschicht für die HomeMatic IP Außensirene (HmIP-ASIR-O)
@@ -19,6 +20,7 @@ require_once __DIR__ . '/../libs/Trait_SmartLog.php';
 class HmIP_ASIRO extends IPSModuleStrict
 {
     use SmartLog_Trait;
+    use DeviceAvailability_Trait;
 
     // Akustik-Konstanten
     public const ACOUSTIC_OFF             = 0;
@@ -43,6 +45,8 @@ class HmIP_ASIRO extends IPSModuleStrict
         $this->RegisterPropertyInteger('DefaultAcoustic', self::ACOUSTIC_FREQ_ALTERNATING);
         $this->RegisterPropertyInteger('DefaultOptical', self::OPTICAL_FLASH);
         $this->RegisterPropertyInteger('DefaultDuration', 0); // 0 = dauerhaft
+
+        $this->DA_RegisterAvailability(900);
 
         // Profile anlegen
         if (!IPS_VariableProfileExists('HmIP.ASIRO.Acoustic')) {
@@ -93,6 +97,12 @@ class HmIP_ASIRO extends IPSModuleStrict
     {
         parent::ApplyChanges();
 
+        // Validierung
+        if ($this->ReadPropertyInteger('SirenInstanceID') <= 0) {
+            $this->SetStatus(104);
+            return;
+        }
+
         foreach ($this->GetReferenceList() as $refID) {
             $this->UnregisterReference($refID);
         }
@@ -109,11 +119,17 @@ class HmIP_ASIRO extends IPSModuleStrict
         if ($this->GetValue('OpticalSignal') === 0 && $this->ReadPropertyInteger('DefaultOptical') > 0) {
             $this->SetValue('OpticalSignal', $this->ReadPropertyInteger('DefaultOptical'));
         }
+
+        $this->DA_ApplyPresentation();
     }
 
     public function RequestAction(string $Ident, mixed $Value): void
     {
         switch ($Ident) {
+            case 'DA_Watchdog':
+                $this->DA_HandleWatchdog();
+                break;
+
             case 'IsActive':
                 if ((bool)$Value) {
                     $ac  = $this->GetValue('AcousticSignal');
@@ -227,7 +243,9 @@ class HmIP_ASIRO extends IPSModuleStrict
     {
         try {
             HM_WriteValueString($instID, 'COMBINED_PARAMETER', $param);
+            $this->DA_SetAvailable(true);
         } catch (\Throwable $e) {
+            $this->DA_SetAvailable(false, $e->getMessage());
             $this->SLogError("HM_WriteValueString fehlgeschlagen: " . $e->getMessage(), $param);
         }
     }
@@ -240,6 +258,13 @@ class HmIP_ASIRO extends IPSModuleStrict
     {
         return <<<'EOT'
 {
+    "status": [
+        { "code": 104, "icon": "inactive", "caption": "SirenInstanceID nicht konfiguriert" },
+        { "code": 201, "icon": "inactive", "caption": "Gerät nicht erreichbar" },
+        { "code": 202, "icon": "inactive", "caption": "Keine Antwort vom Gerät" },
+        { "code": 203, "icon": "error", "caption": "Gerätefehler" },
+        { "code": 204, "icon": "error", "caption": "Netzwerkfehler" }
+    ],
     "elements": [
         {
             "type": "Label",
@@ -302,6 +327,12 @@ class HmIP_ASIRO extends IPSModuleStrict
             "type": "Label",
             "bold": true,
             "caption": "Test-Aktionen"
+        },
+        {
+            "type": "Button",
+            "caption": "Verbindung testen",
+            "onClick": "echo 'SirenInstanceID = ' . $id;",
+            "icon": "Network"
         },
         {
             "type": "RowLayout",

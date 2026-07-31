@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/Trait_SmartLog.php';
+require_once __DIR__ . '/../libs/Trait_DeviceAvailability.php';
 
 /**
  * HmIP_MP3P – Abstraktionsschicht für den HomeMatic IP Musikgong (HmIP-MP3P)
@@ -30,6 +31,7 @@ require_once __DIR__ . '/../libs/Trait_SmartLog.php';
 class HmIP_MP3P extends IPSModuleStrict
 {
     use SmartLog_Trait;
+    use DeviceAvailability_Trait;
 
     // Farb-Konstanten für SetLight
     public const COLOR_OFF     = 0;
@@ -49,6 +51,8 @@ class HmIP_MP3P extends IPSModuleStrict
         $this->RegisterPropertyInteger('SoundInstanceID', 0);
         $this->RegisterPropertyInteger('LightInstanceID', 0);
         $this->RegisterPropertyInteger('DefaultVolume', 80);
+
+        $this->DA_RegisterAvailability(900);
 
         // Status-Variablen (für Tile-UI / Monitoring)
         $this->RegisterVariableBoolean('IsPlaying', 'Spielt gerade', [
@@ -98,6 +102,12 @@ class HmIP_MP3P extends IPSModuleStrict
     {
         parent::ApplyChanges();
 
+        // Validierung
+        if ($this->ReadPropertyInteger('SoundInstanceID') <= 0 && $this->ReadPropertyInteger('LightInstanceID') <= 0) {
+            $this->SetStatus(104);
+            return;
+        }
+
         foreach ($this->GetReferenceList() as $refID) {
             $this->UnregisterReference($refID);
         }
@@ -146,11 +156,17 @@ class HmIP_MP3P extends IPSModuleStrict
             'SHOW_PREVIEW' => true,
             'OPTIONS' => $lightActiveOptions
         ]);
+
+        $this->DA_ApplyPresentation();
     }
 
     public function RequestAction(string $Ident, mixed $Value): void
     {
         switch ($Ident) {
+            case 'DA_Watchdog':
+                $this->DA_HandleWatchdog();
+                break;
+
             case 'Volume':
                 $vol = max(0, min(100, (int)$Value));
                 $this->SetValue('Volume', $vol);
@@ -304,7 +320,9 @@ class HmIP_MP3P extends IPSModuleStrict
     {
         try {
             HM_WriteValueString($instID, 'COMBINED_PARAMETER', $param);
+            $this->DA_SetAvailable(true);
         } catch (\Throwable $e) {
+            $this->DA_SetAvailable(false, $e->getMessage());
             $this->SLogError("HM_WriteValueString fehlgeschlagen: " . $e->getMessage(), $param);
         }
     }
@@ -317,6 +335,13 @@ class HmIP_MP3P extends IPSModuleStrict
     {
         return <<<'EOT'
 {
+    "status": [
+        { "code": 104, "icon": "inactive", "caption": "Keine Instanz konfiguriert" },
+        { "code": 201, "icon": "inactive", "caption": "Gerät nicht erreichbar" },
+        { "code": 202, "icon": "inactive", "caption": "Keine Antwort vom Gerät" },
+        { "code": 203, "icon": "error", "caption": "Gerätefehler" },
+        { "code": 204, "icon": "error", "caption": "Netzwerkfehler" }
+    ],
     "elements": [
         {
             "type": "Label",
@@ -356,6 +381,12 @@ class HmIP_MP3P extends IPSModuleStrict
             "type": "Label",
             "bold": true,
             "caption": "Test-Aktionen"
+        },
+        {
+            "type": "Button",
+            "caption": "Verbindung testen",
+            "onClick": "echo 'Instanz = ' . $id;",
+            "icon": "Network"
         },
         {
             "type": "RowLayout",
