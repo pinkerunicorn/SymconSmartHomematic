@@ -2,7 +2,7 @@
     "id": "{B1E4A92D-3C78-4F05-A8D3-7E2F1B094C56}",
     "name": "HmIP_MP3P",
     "type": 3,
-    "vendor": "Florian Graßinger",
+    "vendor": "Florian Gra\u00dfinger",
     "aliases": [
         "HmIP MP3P Musikgong"
     ],
@@ -10,6 +10,6 @@
     "childRequirements": [],
     "implemented": [],
     "prefix": "MP3P",
-    "author": "Florian Graßinger",
-    "url": "https://github.com/pinkerunicorn/SymconSmartHomematic"
+    "author": "Florian Gra\u00dfinger",
+    "url": "https://github.com/pinkerunicorn/SymconSmartHomematic/tree/main/HmIP_MP3P"
 }

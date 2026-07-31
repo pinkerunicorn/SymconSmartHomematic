@@ -2,7 +2,7 @@
     "id": "{C2A5D038-7E91-4B62-9F4A-1D3E8C507B84}",
     "name": "HmIP_WRC6",
     "type": 3,
-    "vendor": "Florian Graßinger",
+    "vendor": "Florian Gra\u00dfinger",
     "aliases": [
         "HmIP WRC6 Wandtaster 6-fach"
     ],
@@ -10,6 +10,6 @@
     "childRequirements": [],
     "implemented": [],
     "prefix": "WRC6",
-    "author": "Florian Graßinger",
-    "url": "https://github.com/pinkerunicorn/SymconSmartHomematic"
+    "author": "Florian Gra\u00dfinger",
+    "url": "https://github.com/pinkerunicorn/SymconSmartHomematic/tree/main/HmIP_WRC6"
 }

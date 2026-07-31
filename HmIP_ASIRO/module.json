@@ -2,14 +2,14 @@
     "id": "{D3F6E149-8A02-4C73-B5E1-2F4D7A618C95}",
     "name": "HmIP_ASIRO",
     "type": 3,
-    "vendor": "Florian Graßinger",
+    "vendor": "Florian Gra\u00dfinger",
     "aliases": [
-        "HmIP ASIR-O Außensirene"
+        "HmIP ASIR-O Au\u00dfensirene"
     ],
     "parentRequirements": [],
     "childRequirements": [],
     "implemented": [],
     "prefix": "ASIRO",
-    "author": "Florian Graßinger",
-    "url": "https://github.com/pinkerunicorn/SymconSmartHomematic"
+    "author": "Florian Gra\u00dfinger",
+    "url": "https://github.com/pinkerunicorn/SymconSmartHomematic/tree/main/HmIP_ASIRO"
 }
