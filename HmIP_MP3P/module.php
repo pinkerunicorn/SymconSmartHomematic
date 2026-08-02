@@ -79,21 +79,18 @@ class HmIP_MP3P extends IPSModuleStrict
             'ICON'         => 'Bulb'
         ], 4);
 
-        if (!IPS_VariableProfileExists('HmIP.MP3P.Color')) {
-            IPS_CreateVariableProfile('HmIP.MP3P.Color', 1);
-            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 0, 'Aus',      '',  0x000000);
-            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 1, 'Blau',     '', 0x0000FF);
-            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 2, 'Grün',     '', 0x00FF00);
-            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 3, 'Türkis',   '', 0x00FFFF);
-            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 4, 'Rot',      '', 0xFF0000);
-            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 5, 'Violett',  '', 0x8800FF);
-            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 6, 'Gelb',     '', 0xFFFF00);
-            IPS_SetVariableProfileAssociation('HmIP.MP3P.Color', 7, 'Weiß',     '', 0xFFFFFF);
-        }
-
         $this->RegisterVariableInteger('LightColor', 'LED Farbe', [
-            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-            'PROFILE'      => 'HmIP.MP3P.Color',
+            'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+            'OPTIONS'      => json_encode([
+                ['Value' => 0, 'Caption' => 'Aus',      'IconActive' => false, 'IconValue' => '', 'Color' => 0x000000],
+                ['Value' => 1, 'Caption' => 'Blau',     'IconActive' => false, 'IconValue' => '', 'Color' => 0x0000FF],
+                ['Value' => 2, 'Caption' => 'Grün',     'IconActive' => false, 'IconValue' => '', 'Color' => 0x00FF00],
+                ['Value' => 3, 'Caption' => 'Türkis',   'IconActive' => false, 'IconValue' => '', 'Color' => 0x00FFFF],
+                ['Value' => 4, 'Caption' => 'Rot',      'IconActive' => false, 'IconValue' => '', 'Color' => 0xFF0000],
+                ['Value' => 5, 'Caption' => 'Violett',  'IconActive' => false, 'IconValue' => '', 'Color' => 0x8800FF],
+                ['Value' => 6, 'Caption' => 'Gelb',     'IconActive' => false, 'IconValue' => '', 'Color' => 0xFFFF00],
+                ['Value' => 7, 'Caption' => 'Weiß',     'IconActive' => false, 'IconValue' => '', 'Color' => 0xFFFFFF]
+            ])
         ], 5);
         $this->EnableAction('LightColor');
     }
@@ -156,6 +153,11 @@ class HmIP_MP3P extends IPSModuleStrict
             'SHOW_PREVIEW' => true,
             'OPTIONS' => $lightActiveOptions
         ]);
+
+        // Legacy-Profile bereinigen
+        if (IPS_VariableProfileExists('HmIP.MP3P.Color')) {
+            IPS_DeleteVariableProfile('HmIP.MP3P.Color');
+        }
 
         $this->DA_ApplyPresentation();
     }

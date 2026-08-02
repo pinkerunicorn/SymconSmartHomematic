@@ -48,24 +48,7 @@ class HmIP_ASIRO extends IPSModuleStrict
 
         $this->DA_RegisterAvailability(900);
 
-        // Profile anlegen
-        if (!IPS_VariableProfileExists('HmIP.ASIRO.Acoustic')) {
-            IPS_CreateVariableProfile('HmIP.ASIRO.Acoustic', 1);
-            IPS_SetVariableProfileAssociation('HmIP.ASIRO.Acoustic', 0, 'Kein Ton',              '', 0x888888);
-            IPS_SetVariableProfileAssociation('HmIP.ASIRO.Acoustic', 1, 'Freq. steigend',        '', 0x00AAFF);
-            IPS_SetVariableProfileAssociation('HmIP.ASIRO.Acoustic', 2, 'Freq. fallend',         '', 0x0066FF);
-            IPS_SetVariableProfileAssociation('HmIP.ASIRO.Acoustic', 3, 'Freq. steig./fallend',  '', 0x0044CC);
-            IPS_SetVariableProfileAssociation('HmIP.ASIRO.Acoustic', 4, 'Freq. tief/hoch',       '', 0x00CCAA);
-            IPS_SetVariableProfileAssociation('HmIP.ASIRO.Acoustic', 5, 'Freq. tief',            '', 0x004488);
-            IPS_SetVariableProfileAssociation('HmIP.ASIRO.Acoustic', 6, 'Freq. hoch',            '', 0x0088FF);
-        }
 
-        if (!IPS_VariableProfileExists('HmIP.ASIRO.Optical')) {
-            IPS_CreateVariableProfile('HmIP.ASIRO.Optical', 1);
-            IPS_SetVariableProfileAssociation('HmIP.ASIRO.Optical', 0, 'Kein Licht', '', 0x888888);
-            IPS_SetVariableProfileAssociation('HmIP.ASIRO.Optical', 1, 'Blinken',    '', 0xFFAA00);
-            IPS_SetVariableProfileAssociation('HmIP.ASIRO.Optical', 2, 'Blitzen',    '', 0xFF4400);
-        }
 
         // Status-Variablen
         $this->RegisterVariableBoolean('IsActive', 'Sirene aktiv', [
@@ -75,14 +58,26 @@ class HmIP_ASIRO extends IPSModuleStrict
         $this->EnableAction('IsActive');
 
         $this->RegisterVariableInteger('AcousticSignal', 'Akustik', [
-            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-            'PROFILE'      => 'HmIP.ASIRO.Acoustic',
+            'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+            'OPTIONS'      => json_encode([
+                ['Value' => 0, 'Caption' => 'Kein Ton',             'IconActive' => false, 'IconValue' => '', 'Color' => 0x888888],
+                ['Value' => 1, 'Caption' => 'Freq. steigend',       'IconActive' => false, 'IconValue' => '', 'Color' => 0x00AAFF],
+                ['Value' => 2, 'Caption' => 'Freq. fallend',        'IconActive' => false, 'IconValue' => '', 'Color' => 0x0066FF],
+                ['Value' => 3, 'Caption' => 'Freq. steig./fallend', 'IconActive' => false, 'IconValue' => '', 'Color' => 0x0044CC],
+                ['Value' => 4, 'Caption' => 'Freq. tief/hoch',      'IconActive' => false, 'IconValue' => '', 'Color' => 0x00CCAA],
+                ['Value' => 5, 'Caption' => 'Freq. tief',           'IconActive' => false, 'IconValue' => '', 'Color' => 0x004488],
+                ['Value' => 6, 'Caption' => 'Freq. hoch',           'IconActive' => false, 'IconValue' => '', 'Color' => 0x0088FF]
+            ])
         ], 2);
         $this->EnableAction('AcousticSignal');
 
         $this->RegisterVariableInteger('OpticalSignal', 'Optik', [
-            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-            'PROFILE'      => 'HmIP.ASIRO.Optical',
+            'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+            'OPTIONS'      => json_encode([
+                ['Value' => 0, 'Caption' => 'Kein Licht', 'IconActive' => false, 'IconValue' => '', 'Color' => 0x888888],
+                ['Value' => 1, 'Caption' => 'Blinken',    'IconActive' => false, 'IconValue' => '', 'Color' => 0xFFAA00],
+                ['Value' => 2, 'Caption' => 'Blitzen',    'IconActive' => false, 'IconValue' => '', 'Color' => 0xFF4400]
+            ])
         ], 3);
         $this->EnableAction('OpticalSignal');
 
@@ -118,6 +113,14 @@ class HmIP_ASIRO extends IPSModuleStrict
         }
         if ($this->GetValue('OpticalSignal') === 0 && $this->ReadPropertyInteger('DefaultOptical') > 0) {
             $this->SetValue('OpticalSignal', $this->ReadPropertyInteger('DefaultOptical'));
+        }
+
+        // Legacy-Profile bereinigen
+        if (IPS_VariableProfileExists('HmIP.ASIRO.Acoustic')) {
+            IPS_DeleteVariableProfile('HmIP.ASIRO.Acoustic');
+        }
+        if (IPS_VariableProfileExists('HmIP.ASIRO.Optical')) {
+            IPS_DeleteVariableProfile('HmIP.ASIRO.Optical');
         }
 
         $this->DA_ApplyPresentation();

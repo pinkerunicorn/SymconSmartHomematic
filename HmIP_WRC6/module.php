@@ -98,17 +98,7 @@ class HmIP_WRC6 extends IPSModuleStrict
 
         // --- Variable Profile ---
 
-        if (!IPS_VariableProfileExists('HmIP.WRC6.Color')) {
-            IPS_CreateVariableProfile('HmIP.WRC6.Color', 1);
-            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 0, 'Aus',     '', 0x000000);
-            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 1, 'Blau',    '', 0x0000FF);
-            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 2, 'Grün',    '', 0x00FF00);
-            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 3, 'Türkis',  '', 0x00FFFF);
-            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 4, 'Rot',     '', 0xFF0000);
-            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 5, 'Violett', '', 0x8800FF);
-            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 6, 'Gelb',    '', 0xFFFF00);
-            IPS_SetVariableProfileAssociation('HmIP.WRC6.Color', 7, 'Weiß',    '', 0xFFFFFF);
-        }
+
 
         $this->DA_RegisterAvailability(900);
     }
@@ -180,10 +170,22 @@ class HmIP_WRC6 extends IPSModuleStrict
 
             if ($ledInstID > 1 && @IPS_InstanceExists($ledInstID)) {
                 $this->RegisterReference($ledInstID);
-                $this->MaintainVariable($ledIdent, "💡 LED {$label}", 1, 'HmIP.WRC6.Color', $i * 3 - 1, true);
+                $this->RegisterVariableInteger($ledIdent, "💡 LED {$label}", [
+                    'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+                    'OPTIONS'      => json_encode([
+                        ['Value' => 0, 'Caption' => 'Aus',     'IconActive' => false, 'IconValue' => '', 'Color' => 0x000000],
+                        ['Value' => 1, 'Caption' => 'Blau',    'IconActive' => false, 'IconValue' => '', 'Color' => 0x0000FF],
+                        ['Value' => 2, 'Caption' => 'Grün',    'IconActive' => false, 'IconValue' => '', 'Color' => 0x00FF00],
+                        ['Value' => 3, 'Caption' => 'Türkis',  'IconActive' => false, 'IconValue' => '', 'Color' => 0x00FFFF],
+                        ['Value' => 4, 'Caption' => 'Rot',     'IconActive' => false, 'IconValue' => '', 'Color' => 0xFF0000],
+                        ['Value' => 5, 'Caption' => 'Violett', 'IconActive' => false, 'IconValue' => '', 'Color' => 0x8800FF],
+                        ['Value' => 6, 'Caption' => 'Gelb',    'IconActive' => false, 'IconValue' => '', 'Color' => 0xFFFF00],
+                        ['Value' => 7, 'Caption' => 'Weiß',    'IconActive' => false, 'IconValue' => '', 'Color' => 0xFFFFFF]
+                    ])
+                ], $i * 3 - 1);
                 $this->EnableAction($ledIdent);
             } else {
-                $this->MaintainVariable($ledIdent, "LED Taste {$i}", 1, 'HmIP.WRC6.Color', $i * 3 - 1, false);
+                $this->UnregisterVariable($ledIdent);
             }
         }
 
@@ -226,6 +228,11 @@ class HmIP_WRC6 extends IPSModuleStrict
             $this->MaintainVariable('AuxInput_State', 'Nebenstelleneingang', 1, [
                 'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION
             ], 20, false);
+        }
+
+        // Legacy-Profile bereinigen
+        if (IPS_VariableProfileExists('HmIP.WRC6.Color')) {
+            IPS_DeleteVariableProfile('HmIP.WRC6.Color');
         }
 
         $this->DA_ApplyPresentation();
