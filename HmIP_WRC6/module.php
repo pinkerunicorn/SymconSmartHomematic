@@ -154,14 +154,9 @@ class HmIP_WRC6 extends IPSModuleStrict
             if ($btnInstID > 1 && @IPS_InstanceExists($btnInstID)) {
                 $this->RegisterReference($btnInstID);
                 $this->SubscribeButtonChannel($btnInstID, $i);
-                $this->MaintainVariable($btnIdent, "🔘 {$label}", 1, [
-                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION
-                ], $i * 3 - 2, true);
-                IPS_SetVariableCustomPresentation($this->GetIDForIdent($btnIdent), $customPresentation);
+                $this->RegisterVariableInteger($btnIdent, "🔘 {$label}", $customPresentation, $i * 3 - 2);
             } else {
-                $this->MaintainVariable($btnIdent, "Taste {$i}", 1, [
-                    'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION
-                ], $i * 3 - 2, false);
+                $this->UnregisterVariable($btnIdent);
             }
 
             // LED-Instanz
@@ -193,10 +188,10 @@ class HmIP_WRC6 extends IPSModuleStrict
         $switchInstID = $this->ReadPropertyInteger('Switch_InstID');
         if ($switchInstID > 1 && @IPS_InstanceExists($switchInstID)) {
             $this->RegisterReference($switchInstID);
-            $this->MaintainVariable('Switch_State', '🔌 Schaltausgang (Relais)', 0, [
+            $this->RegisterVariableBoolean('Switch_State', '🔌 Schaltausgang (Relais)', [
                 'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
                 'ICON'         => 'Power'
-            ], 19, true);
+            ], 19);
             $this->EnableAction('Switch_State');
 
             // Statusvariable des Schaltausgangs abonnieren
@@ -208,7 +203,7 @@ class HmIP_WRC6 extends IPSModuleStrict
                 }
             }
         } else {
-            $this->MaintainVariable('Switch_State', 'Schaltausgang', 0, '', 19, false);
+            $this->UnregisterVariable('Switch_State');
         }
 
         // --- Nebenstelleneingang ---
@@ -217,17 +212,12 @@ class HmIP_WRC6 extends IPSModuleStrict
 
         if ($auxInstID > 1 && @IPS_InstanceExists($auxInstID)) {
             $this->RegisterReference($auxInstID);
-            $this->MaintainVariable('AuxInput_State', "🔔 {$auxLabel}", 1, [
-                'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION
-            ], 20, true);
-            IPS_SetVariableCustomPresentation($this->GetIDForIdent('AuxInput_State'), $customPresentation);
+            $this->RegisterVariableInteger('AuxInput_State', "🔔 {$auxLabel}", $customPresentation, 20);
 
             // PRESS_SHORT / PRESS_LONG des Nebenstelleneingangs abonnieren
             $this->SubscribeButtonChannel($auxInstID, 0); // 0 = Aux-Kanal
         } else {
-            $this->MaintainVariable('AuxInput_State', 'Nebenstelleneingang', 1, [
-                'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION
-            ], 20, false);
+            $this->UnregisterVariable('AuxInput_State');
         }
 
         // Legacy-Profile bereinigen
