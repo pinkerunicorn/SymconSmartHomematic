@@ -211,9 +211,8 @@ class HmIP_MP3P extends IPSModuleStrict
         $volume = max(0, min(100, $volume));
 
         $dv  = max(0, $durationSeconds);
-        $rep = ($dv > 0) ? 0 : 0; // 0 = einmal abspielen
 
-        $param = "L={$volume},DU=0,DV={$dv},RTU=0,RTV=0,R={$rep},SL={$tracks}";
+        $param = "L={$volume},DU=0,DV={$dv},RTU=0,RTV=0,R=0,SL={$tracks}";
 
         $this->SLogInfo("PlaySound: Tracks '{$tracks}', Vol {$volume}%, Dauer {$dv}s");
         $this->SendDebug('MP3P::PlaySound', $param, 0);
