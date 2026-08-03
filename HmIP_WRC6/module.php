@@ -106,6 +106,8 @@ class HmIP_WRC6 extends IPSModuleStrict
     public function ApplyChanges(): void
     {
         parent::ApplyChanges();
+        
+        $this->DA_ApplyPresentation();
 
         // Validierung
         $hasInstance = false;
@@ -135,7 +137,7 @@ class HmIP_WRC6 extends IPSModuleStrict
             ['Value' => 1, 'Caption' => 'Gedrückt', 'IconValue' => 'Information', 'IconActive' => true, 'ColorActive' => true, 'ColorDisplay' => 0x0088FF, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => 0x0088FF]
         ]);
         $customPresentation = [
-            'PRESENTATION' => '{3319437D-7CDE-699D-750A-3C6A3841FA75}',
+            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
             'ICON' => '',
             'COLOR' => -1,
             'CONTENT_COLOR' => -1,

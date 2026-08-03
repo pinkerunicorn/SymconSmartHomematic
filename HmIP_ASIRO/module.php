@@ -91,6 +91,8 @@ class HmIP_ASIRO extends IPSModuleStrict
     public function ApplyChanges(): void
     {
         parent::ApplyChanges();
+        
+        $this->DA_ApplyPresentation();
 
         // Validierung
         if ($this->ReadPropertyInteger('SirenInstanceID') <= 0) {

@@ -56,7 +56,7 @@ class HmIP_MP3P extends IPSModuleStrict
 
         // Status-Variablen (für Tile-UI / Monitoring)
         $this->RegisterVariableBoolean('IsPlaying', 'Spielt gerade', [
-            'PRESENTATION' => '{3319437D-7CDE-699D-750A-3C6A3841FA75}',
+            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
             'ICON'         => 'Music',
             'COLOR' => -1,
             'CONTENT_COLOR' => -1,
@@ -84,7 +84,7 @@ class HmIP_MP3P extends IPSModuleStrict
         ], 3);
 
         $this->RegisterVariableBoolean('LightActive', 'LED aktiv', [
-            'PRESENTATION' => '{3319437D-7CDE-699D-750A-3C6A3841FA75}',
+            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
             'ICON'         => 'Bulb',
             'COLOR' => -1,
             'CONTENT_COLOR' => -1,
@@ -116,6 +116,8 @@ class HmIP_MP3P extends IPSModuleStrict
     public function ApplyChanges(): void
     {
         parent::ApplyChanges();
+        
+        $this->DA_ApplyPresentation();
 
         // Validierung
         if ($this->ReadPropertyInteger('SoundInstanceID') <= 0 && $this->ReadPropertyInteger('LightInstanceID') <= 0) {
