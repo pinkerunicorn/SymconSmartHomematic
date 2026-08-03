@@ -56,8 +56,17 @@ class HmIP_MP3P extends IPSModuleStrict
 
         // Status-Variablen (für Tile-UI / Monitoring)
         $this->RegisterVariableBoolean('IsPlaying', 'Spielt gerade', [
-            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-            'ICON'         => 'Music'
+            'PRESENTATION' => '{3319437D-7CDE-699D-750A-3C6A3841FA75}',
+            'ICON'         => 'Music',
+            'COLOR' => -1,
+            'CONTENT_COLOR' => -1,
+            'DISPLAY_TYPE' => 0,
+            'PREVIEW_STYLE' => 1,
+            'SHOW_PREVIEW' => true,
+            'OPTIONS' => json_encode([
+                ['Value' => false, 'Caption' => 'Gestoppt', 'IconValue' => 'Music', 'IconActive' => false, 'ColorActive' => false, 'ColorDisplay' => -1, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => -1],
+                ['Value' => true, 'Caption' => 'Spielt', 'IconValue' => 'Music', 'IconActive' => true, 'ColorActive' => true, 'ColorDisplay' => 0x00CC00, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => 0x00CC00]
+            ])
         ], 1);
 
         $this->RegisterVariableInteger('Volume', 'Lautstärke', [
@@ -75,8 +84,17 @@ class HmIP_MP3P extends IPSModuleStrict
         ], 3);
 
         $this->RegisterVariableBoolean('LightActive', 'LED aktiv', [
-            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-            'ICON'         => 'Bulb'
+            'PRESENTATION' => '{3319437D-7CDE-699D-750A-3C6A3841FA75}',
+            'ICON'         => 'Bulb',
+            'COLOR' => -1,
+            'CONTENT_COLOR' => -1,
+            'DISPLAY_TYPE' => 0,
+            'PREVIEW_STYLE' => 1,
+            'SHOW_PREVIEW' => true,
+            'OPTIONS' => json_encode([
+                ['Value' => false, 'Caption' => 'Aus', 'IconValue' => 'Bulb', 'IconActive' => false, 'ColorActive' => false, 'ColorDisplay' => -1, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => -1],
+                ['Value' => true, 'Caption' => 'An', 'IconValue' => 'Bulb', 'IconActive' => true, 'ColorActive' => true, 'ColorDisplay' => 0xFFCC00, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => 0xFFCC00]
+            ])
         ], 4);
 
         $this->RegisterVariableInteger('LightColor', 'LED Farbe', [
@@ -124,42 +142,13 @@ class HmIP_MP3P extends IPSModuleStrict
             $this->SetValue('Volume', $this->ReadPropertyInteger('DefaultVolume'));
         }
 
-        $isPlayingOptions = json_encode([
-            ['Value' => false, 'Caption' => 'Gestoppt', 'IconValue' => 'Music', 'IconActive' => false, 'ColorActive' => false, 'ColorDisplay' => -1, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => -1],
-            ['Value' => true, 'Caption' => 'Spielt', 'IconValue' => 'Music', 'IconActive' => true, 'ColorActive' => true, 'ColorDisplay' => 0x00CC00, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => 0x00CC00]
-        ]);
-        IPS_SetVariableCustomPresentation($this->GetIDForIdent('IsPlaying'), [
-            'PRESENTATION' => '{3319437D-7CDE-699D-750A-3C6A3841FA75}',
-            'ICON' => 'Music',
-            'COLOR' => -1,
-            'CONTENT_COLOR' => -1,
-            'DISPLAY_TYPE' => 0,
-            'PREVIEW_STYLE' => 1,
-            'SHOW_PREVIEW' => true,
-            'OPTIONS' => $isPlayingOptions
-        ]);
 
-        $lightActiveOptions = json_encode([
-            ['Value' => false, 'Caption' => 'Aus', 'IconValue' => 'Bulb', 'IconActive' => false, 'ColorActive' => false, 'ColorDisplay' => -1, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => -1],
-            ['Value' => true, 'Caption' => 'An', 'IconValue' => 'Bulb', 'IconActive' => true, 'ColorActive' => true, 'ColorDisplay' => 0xFFCC00, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => 0xFFCC00]
-        ]);
-        IPS_SetVariableCustomPresentation($this->GetIDForIdent('LightActive'), [
-            'PRESENTATION' => '{3319437D-7CDE-699D-750A-3C6A3841FA75}',
-            'ICON' => 'Bulb',
-            'COLOR' => -1,
-            'CONTENT_COLOR' => -1,
-            'DISPLAY_TYPE' => 0,
-            'PREVIEW_STYLE' => 1,
-            'SHOW_PREVIEW' => true,
-            'OPTIONS' => $lightActiveOptions
-        ]);
 
         // Legacy-Profile bereinigen
         if (IPS_VariableProfileExists('HmIP.MP3P.Color')) {
             IPS_DeleteVariableProfile('HmIP.MP3P.Color');
         }
 
-        $this->DA_ApplyPresentation();
     }
 
     public function RequestAction(string $Ident, mixed $Value): void

@@ -225,7 +225,6 @@ class HmIP_WRC6 extends IPSModuleStrict
             IPS_DeleteVariableProfile('HmIP.WRC6.Color');
         }
 
-        $this->DA_ApplyPresentation();
     }
 
     /**

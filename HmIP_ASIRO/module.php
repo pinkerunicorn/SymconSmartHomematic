@@ -123,7 +123,6 @@ class HmIP_ASIRO extends IPSModuleStrict
             IPS_DeleteVariableProfile('HmIP.ASIRO.Optical');
         }
 
-        $this->DA_ApplyPresentation();
     }
 
     public function RequestAction(string $Ident, mixed $Value): void
