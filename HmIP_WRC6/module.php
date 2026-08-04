@@ -156,7 +156,7 @@ class HmIP_WRC6 extends IPSModuleStrict
             if ($btnInstID > 1 && @IPS_InstanceExists($btnInstID)) {
                 $this->RegisterReference($btnInstID);
                 $this->SubscribeButtonChannel($btnInstID, $i);
-                $this->RegisterVariableInteger($btnIdent, "🔘 {$label}", $customPresentation, $i * 3 - 2);
+                $this->RegisterVariableInteger($btnIdent, "{$label}", $customPresentation, $i * 3 - 2);
             } else {
                 $this->UnregisterVariable($btnIdent);
             }
@@ -167,7 +167,7 @@ class HmIP_WRC6 extends IPSModuleStrict
 
             if ($ledInstID > 1 && @IPS_InstanceExists($ledInstID)) {
                 $this->RegisterReference($ledInstID);
-                $this->RegisterVariableInteger($ledIdent, "💡 LED {$label}", [
+                $this->RegisterVariableInteger($ledIdent, "LED {$label}", [
                     'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
                     'OPTIONS'      => json_encode([
                         ['Value' => 0, 'Caption' => 'Aus',     'IconActive' => false, 'IconValue' => '', 'Color' => 0x000000],
@@ -190,7 +190,7 @@ class HmIP_WRC6 extends IPSModuleStrict
         $switchInstID = $this->ReadPropertyInteger('Switch_InstID');
         if ($switchInstID > 1 && @IPS_InstanceExists($switchInstID)) {
             $this->RegisterReference($switchInstID);
-            $this->RegisterVariableBoolean('Switch_State', '🔌 Schaltausgang (Relais)', [
+            $this->RegisterVariableBoolean('Switch_State', 'Schaltausgang (Relais)', [
                 'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
                 'ICON'         => 'Power'
             ], 19);
@@ -214,7 +214,7 @@ class HmIP_WRC6 extends IPSModuleStrict
 
         if ($auxInstID > 1 && @IPS_InstanceExists($auxInstID)) {
             $this->RegisterReference($auxInstID);
-            $this->RegisterVariableInteger('AuxInput_State', "🔔 {$auxLabel}", $customPresentation, 20);
+            $this->RegisterVariableInteger('AuxInput_State', "{$auxLabel}", $customPresentation, 20);
 
             // PRESS_SHORT / PRESS_LONG des Nebenstelleneingangs abonnieren
             $this->SubscribeButtonChannel($auxInstID, 0); // 0 = Aux-Kanal
