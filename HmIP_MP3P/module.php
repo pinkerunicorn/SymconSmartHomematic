@@ -151,6 +151,7 @@ class HmIP_MP3P extends IPSModuleStrict
             IPS_DeleteVariableProfile('HmIP.MP3P.Color');
         }
 
+        $this->SetStatus(102);
     }
 
     public function RequestAction(string $Ident, mixed $Value): void
