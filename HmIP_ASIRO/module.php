@@ -61,7 +61,7 @@ class HmIP_ASIRO extends IPSModuleStrict
 
         $this->DA_RegisterAvailability(900);
 
-        // Status-Variablen mit Icons
+        // Status-Variablen mit Icons & Auswahl-Presets
         $this->RegisterVariableBoolean('IsActive', 'Sirene aktiv', [
             'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
             'ICON'         => 'Power'
@@ -110,12 +110,31 @@ class HmIP_ASIRO extends IPSModuleStrict
         ], 3);
         $this->EnableAction('OpticalSignal');
 
-        $this->RegisterVariableInteger('Duration', 'Dauer (Sekunden)', [
-            'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
+        $this->RegisterVariableInteger('Duration', 'Dauer', [
+            'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
             'ICON'         => 'Clock',
-            'SUFFIX'       => ' s'
+            'OPTIONS'      => json_encode([
+                ['Value' => 2,   'Caption' => '2 Sekunden'],
+                ['Value' => 5,   'Caption' => '5 Sekunden'],
+                ['Value' => 10,  'Caption' => '10 Sekunden'],
+                ['Value' => 15,  'Caption' => '15 Sekunden'],
+                ['Value' => 30,  'Caption' => '30 Sekunden'],
+                ['Value' => 60,  'Caption' => '1 Minute'],
+                ['Value' => 120, 'Caption' => '2 Minuten'],
+                ['Value' => 180, 'Caption' => '3 Minuten'],
+                ['Value' => 300, 'Caption' => '5 Minuten']
+            ])
         ], 4);
         $this->EnableAction('Duration');
+
+        $this->RegisterVariableInteger('TriggerTest', 'Sirenen-Test', [
+            'PRESENTATION' => VARIABLE_PRESENTATION_BUTTON,
+            'ICON'         => 'Alert',
+            'OPTIONS'      => json_encode([
+                ['Value' => 1, 'Caption' => '🚨 Test auslösen', 'IconActive' => false, 'IconValue' => '', 'Color' => 0xFF4400]
+            ])
+        ], 5);
+        $this->EnableAction('TriggerTest');
     }
 
     public function ApplyChanges(): void
@@ -144,8 +163,9 @@ class HmIP_ASIRO extends IPSModuleStrict
         if ($this->GetValue('OpticalSignal') === 0 && $this->ReadPropertyInteger('DefaultOptical') > 0) {
             $this->SetValue('OpticalSignal', $this->ReadPropertyInteger('DefaultOptical'));
         }
-        if ($this->GetValue('Duration') === 0 && $this->ReadPropertyInteger('DefaultDuration') > 0) {
-            $this->SetValue('Duration', $this->ReadPropertyInteger('DefaultDuration'));
+        if ($this->GetValue('Duration') <= 0) {
+            $defaultDur = $this->ReadPropertyInteger('DefaultDuration');
+            $this->SetValue('Duration', $defaultDur > 0 ? $defaultDur : 10);
         }
 
         $this->SetStatus(102);
@@ -160,8 +180,8 @@ class HmIP_ASIRO extends IPSModuleStrict
 
             case 'IsActive':
                 if ((bool)$Value) {
-                    $ac  = $this->GetValue('AcousticSignal');
-                    $opt = $this->GetValue('OpticalSignal');
+                    $ac  = (int)$this->GetValue('AcousticSignal');
+                    $opt = (int)$this->GetValue('OpticalSignal');
                     $dur = max(1, (int)$this->GetValue('Duration'));
                     $this->Trigger($ac, $opt, $dur);
                 } else {
@@ -172,7 +192,7 @@ class HmIP_ASIRO extends IPSModuleStrict
             case 'AcousticSignal':
                 $this->SetValue('AcousticSignal', (int)$Value);
                 if ($this->GetValue('IsActive')) {
-                    $opt = $this->GetValue('OpticalSignal');
+                    $opt = (int)$this->GetValue('OpticalSignal');
                     $dur = max(1, (int)$this->GetValue('Duration'));
                     $this->Trigger((int)$Value, $opt, $dur);
                 }
@@ -181,14 +201,18 @@ class HmIP_ASIRO extends IPSModuleStrict
             case 'OpticalSignal':
                 $this->SetValue('OpticalSignal', (int)$Value);
                 if ($this->GetValue('IsActive')) {
-                    $ac  = $this->GetValue('AcousticSignal');
+                    $ac  = (int)$this->GetValue('AcousticSignal');
                     $dur = max(1, (int)$this->GetValue('Duration'));
                     $this->Trigger($ac, (int)$Value, $dur);
                 }
                 break;
 
             case 'Duration':
-                $this->SetValue('Duration', max(0, (int)$Value));
+                $this->SetValue('Duration', max(1, (int)$Value));
+                break;
+
+            case 'TriggerTest':
+                $this->Test();
                 break;
 
             default:
@@ -252,12 +276,12 @@ class HmIP_ASIRO extends IPSModuleStrict
      */
     public function Test(): void
     {
-        $ac  = $this->GetValue('AcousticSignal');
-        $opt = $this->GetValue('OpticalSignal');
+        $ac  = (int)$this->GetValue('AcousticSignal');
+        $opt = (int)$this->GetValue('OpticalSignal');
         $dur = max(1, (int)$this->GetValue('Duration'));
         
         $this->Trigger($ac, $opt, $dur, 0);
-        echo "ASIRO Test: Sirene mit Akustik {$ac}, Optik {$opt} für {$dur}s ausgelöst.";
+        $this->SLogInfo("Test ausgeführt: Akustik={$ac}, Optik={$opt}, Dauer={$dur}s");
     }
 
     // =========================================================================
