@@ -96,9 +96,11 @@ class HmIP_WRC6 extends IPSModuleStrict
         $this->RegisterPropertyInteger('AuxInput_InstID', 0);
         $this->RegisterPropertyString('AuxInput_Label', 'Nebenstelleneingang');
 
-        // --- Variable Profile ---
-
-
+        // Timers für Auto-Reset (Tastendruck)
+        for ($i = 1; $i <= self::NUM_BUTTONS; $i++) {
+            $this->RegisterTimer("ResetButton_{$i}", 0, "WRC6_ResetButton(\$_IPS['TARGET'], {$i});");
+        }
+        $this->RegisterTimer("ResetAux", 0, "WRC6_ResetAux(\$_IPS['TARGET']);");
 
         $this->DA_RegisterAvailability(900);
     }
@@ -318,10 +320,7 @@ class HmIP_WRC6 extends IPSModuleStrict
 
         // Reset nach 500 ms damit nächster Druck erkannt wird
         $timerIdent = $isAux ? 'ResetAux' : "ResetButton_{$button}";
-        $timerCode  = $isAux
-            ? "WRC6_ResetAux(\$_IPS['TARGET']);"
-            : "WRC6_ResetButton(\$_IPS['TARGET'], {$button});";
-        $this->RegisterTimer($timerIdent, 500, $timerCode);
+        $this->SetTimerInterval($timerIdent, 500);
     }
 
     // =========================================================================
