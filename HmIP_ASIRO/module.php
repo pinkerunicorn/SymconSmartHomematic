@@ -190,28 +190,22 @@ class HmIP_ASIRO extends IPSModuleStrict
                 break;
 
             case 'AcousticSignal':
+                // Nur den Wert in der Variable speichern (keine Auslösung!)
                 $this->SetValue('AcousticSignal', (int)$Value);
-                if ($this->GetValue('IsActive')) {
-                    $opt = (int)$this->GetValue('OpticalSignal');
-                    $dur = max(1, (int)$this->GetValue('Duration'));
-                    $this->Trigger((int)$Value, $opt, $dur);
-                }
                 break;
 
             case 'OpticalSignal':
+                // Nur den Wert in der Variable speichern (keine Auslösung!)
                 $this->SetValue('OpticalSignal', (int)$Value);
-                if ($this->GetValue('IsActive')) {
-                    $ac  = (int)$this->GetValue('AcousticSignal');
-                    $dur = max(1, (int)$this->GetValue('Duration'));
-                    $this->Trigger($ac, (int)$Value, $dur);
-                }
                 break;
 
             case 'Duration':
+                // Nur den Wert in der Variable speichern (keine Auslösung!)
                 $this->SetValue('Duration', max(1, (int)$Value));
                 break;
 
             case 'TriggerTest':
+                // Nur über den Test-Button wird die Auslösung getriggert!
                 $this->Test();
                 break;
 
