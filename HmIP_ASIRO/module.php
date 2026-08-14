@@ -128,7 +128,7 @@ class HmIP_ASIRO extends IPSModuleStrict
         $this->EnableAction('Duration');
 
         $this->RegisterVariableInteger('TriggerTest', 'Sirenen-Test', [
-            'PRESENTATION' => VARIABLE_PRESENTATION_BUTTON,
+            'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
             'ICON'         => 'Alert',
             'OPTIONS'      => json_encode([
                 ['Value' => 1, 'Caption' => '🚨 Test auslösen', 'IconActive' => false, 'IconValue' => '', 'Color' => 0xFF4400]
