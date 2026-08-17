@@ -64,13 +64,13 @@ class HmIP_ASIRO extends IPSModuleStrict
         // Status-Variablen mit Icons & Auswahl-Presets
         $this->RegisterVariableBoolean('IsActive', 'Sirene aktiv', [
             'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
-            'ICON'         => 'Power'
+            'ICON'         => 'power-off'
         ], 1);
         $this->EnableAction('IsActive');
 
         $this->RegisterVariableInteger('AcousticSignal', 'Akustik', [
             'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
-            'ICON'         => 'Volume',
+            'ICON'         => 'volume-high',
             'OPTIONS'      => json_encode([
                 ['Value' => 0,  'Caption' => 'Kein Ton',                       'IconActive' => false, 'IconValue' => '', 'Color' => 0x888888],
                 ['Value' => 1,  'Caption' => 'Frequenz steigend',             'IconActive' => false, 'IconValue' => '', 'Color' => 0x00AAFF],
@@ -96,7 +96,7 @@ class HmIP_ASIRO extends IPSModuleStrict
 
         $this->RegisterVariableInteger('OpticalSignal', 'Optik', [
             'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
-            'ICON'         => 'Light',
+            'ICON'         => 'lightbulb',
             'OPTIONS'      => json_encode([
                 ['Value' => 0, 'Caption' => 'Kein Licht',                  'IconActive' => false, 'IconValue' => '', 'Color' => 0x888888],
                 ['Value' => 1, 'Caption' => 'Abwechselnd langsames Blinken', 'IconActive' => false, 'IconValue' => '', 'Color' => 0xFFAA00],
@@ -112,7 +112,7 @@ class HmIP_ASIRO extends IPSModuleStrict
 
         $this->RegisterVariableInteger('Duration', 'Dauer', [
             'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
-            'ICON'         => 'Clock',
+            'ICON'         => 'stopwatch',
             'OPTIONS'      => json_encode([
                 ['Value' => 2,   'Caption' => '2 Sekunden'],
                 ['Value' => 5,   'Caption' => '5 Sekunden'],
@@ -129,7 +129,7 @@ class HmIP_ASIRO extends IPSModuleStrict
 
         $this->RegisterVariableInteger('TriggerTest', 'Sirenen-Test', [
             'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
-            'ICON'         => 'Alert',
+            'ICON'         => 'bell',
             'OPTIONS'      => json_encode([
                 ['Value' => 1, 'Caption' => '🚨 Test auslösen', 'IconActive' => false, 'IconValue' => '', 'Color' => 0xFF4400]
             ])

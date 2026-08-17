@@ -135,8 +135,8 @@ class HmIP_WRC6 extends IPSModuleStrict
         }
 
         $buttonOptions = json_encode([
-            ['Value' => 0, 'Caption' => 'Nicht gedrückt', 'IconValue' => 'Information', 'IconActive' => false, 'ColorActive' => false, 'ColorDisplay' => -1, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => -1],
-            ['Value' => 1, 'Caption' => 'Gedrückt', 'IconValue' => 'Information', 'IconActive' => true, 'ColorActive' => true, 'ColorDisplay' => 0x0088FF, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => 0x0088FF]
+            ['Value' => 0, 'Caption' => 'Nicht gedrückt', 'IconValue' => 'circle-info', 'IconActive' => false, 'ColorActive' => false, 'ColorDisplay' => -1, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => -1],
+            ['Value' => 1, 'Caption' => 'Gedrückt', 'IconValue' => 'circle-info', 'IconActive' => true, 'ColorActive' => true, 'ColorDisplay' => 0x0088FF, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => 0x0088FF]
         ]);
         $customPresentation = [
             'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
@@ -194,7 +194,7 @@ class HmIP_WRC6 extends IPSModuleStrict
             $this->RegisterReference($switchInstID);
             $this->RegisterVariableBoolean('Switch_State', 'Schaltausgang (Relais)', [
                 'PRESENTATION' => VARIABLE_PRESENTATION_SWITCH,
-                'ICON'         => 'Power'
+                'ICON'         => 'power-off'
             ], 19);
             $this->EnableAction('Switch_State');
 

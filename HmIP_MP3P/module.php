@@ -57,21 +57,21 @@ class HmIP_MP3P extends IPSModuleStrict
         // Status-Variablen (für Tile-UI / Monitoring)
         $this->RegisterVariableBoolean('IsPlaying', 'Spielt gerade', [
             'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-            'ICON'         => 'Music',
+            'ICON'         => 'music',
             'COLOR' => -1,
             'CONTENT_COLOR' => -1,
             'DISPLAY_TYPE' => 0,
             'PREVIEW_STYLE' => 1,
             'SHOW_PREVIEW' => true,
             'OPTIONS' => json_encode([
-                ['Value' => false, 'Caption' => 'Gestoppt', 'IconValue' => 'Music', 'IconActive' => false, 'ColorActive' => false, 'ColorDisplay' => -1, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => -1],
-                ['Value' => true, 'Caption' => 'Spielt', 'IconValue' => 'Music', 'IconActive' => true, 'ColorActive' => true, 'ColorDisplay' => 0x00CC00, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => 0x00CC00]
+                ['Value' => false, 'Caption' => 'Gestoppt', 'IconValue' => 'music', 'IconActive' => false, 'ColorActive' => false, 'ColorDisplay' => -1, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => -1],
+                ['Value' => true, 'Caption' => 'Spielt', 'IconValue' => 'music', 'IconActive' => true, 'ColorActive' => true, 'ColorDisplay' => 0x00CC00, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => 0x00CC00]
             ])
         ], 1);
 
         $this->RegisterVariableInteger('Volume', 'Lautstärke', [
             'PRESENTATION' => VARIABLE_PRESENTATION_SLIDER,
-            'ICON'         => 'Speaker',
+            'ICON'         => 'speaker',
             'SUFFIX'       => ' %',
             'MINVALUE'     => 0,
             'MAXVALUE'     => 100
@@ -80,20 +80,20 @@ class HmIP_MP3P extends IPSModuleStrict
 
         $this->RegisterVariableString('CurrentTrack', 'Aktueller Track', [
             'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-            'ICON'         => 'Music'
+            'ICON'         => 'music'
         ], 3);
 
         $this->RegisterVariableBoolean('LightActive', 'LED aktiv', [
             'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-            'ICON'         => 'Bulb',
+            'ICON'         => 'lightbulb',
             'COLOR' => -1,
             'CONTENT_COLOR' => -1,
             'DISPLAY_TYPE' => 0,
             'PREVIEW_STYLE' => 1,
             'SHOW_PREVIEW' => true,
             'OPTIONS' => json_encode([
-                ['Value' => false, 'Caption' => 'Aus', 'IconValue' => 'Bulb', 'IconActive' => false, 'ColorActive' => false, 'ColorDisplay' => -1, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => -1],
-                ['Value' => true, 'Caption' => 'An', 'IconValue' => 'Bulb', 'IconActive' => true, 'ColorActive' => true, 'ColorDisplay' => 0xFFCC00, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => 0xFFCC00]
+                ['Value' => false, 'Caption' => 'Aus', 'IconValue' => 'lightbulb', 'IconActive' => false, 'ColorActive' => false, 'ColorDisplay' => -1, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => -1],
+                ['Value' => true, 'Caption' => 'An', 'IconValue' => 'lightbulb', 'IconActive' => true, 'ColorActive' => true, 'ColorDisplay' => 0xFFCC00, 'ContentColorActive' => false, 'ContentColorDisplay' => -1, 'ContentColorValue' => -1, 'ColorValue' => 0xFFCC00]
             ])
         ], 4);
 
