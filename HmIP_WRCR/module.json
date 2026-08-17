@@ -1,0 +1,15 @@
+{
+    "id": "{D349FA91-1B82-4E2C-A75D-3984CD947F15}",
+    "name": "HmIP_WRCR",
+    "type": 3,
+    "vendor": "Florian Graßinger",
+    "aliases": [
+        "HmIP WRCR Drehtaster"
+    ],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "WRCR",
+    "author": "Florian Graßinger",
+    "url": "https://github.com/pinkerunicorn/SymconSmartHomematic/tree/main/HmIP_WRCR"
+}
