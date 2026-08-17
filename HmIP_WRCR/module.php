@@ -174,15 +174,15 @@ class HmIP_WRCR extends IPSModuleStrict
                 $this->TriggerAction('Button_Long', 'Taste: Langer Druck');
             }
         } elseif ($channel === 2) { // Drehen Rechts
-            if ($ident === 'PRESS_SHORT') {
+            if ($ident === 'PRESS_LONG') {
                 $this->TriggerAction('TurnRight_Slow', 'Drehen Rechts: Langsam');
-            } elseif ($ident === 'PRESS_LONG') {
+            } elseif ($ident === 'PRESS_SHORT') {
                 $this->TriggerAction('TurnRight_Fast', 'Drehen Rechts: Schnell');
             }
         } elseif ($channel === 3) { // Drehen Links
-            if ($ident === 'PRESS_SHORT') {
+            if ($ident === 'PRESS_LONG') {
                 $this->TriggerAction('TurnLeft_Slow', 'Drehen Links: Langsam');
-            } elseif ($ident === 'PRESS_LONG') {
+            } elseif ($ident === 'PRESS_SHORT') {
                 $this->TriggerAction('TurnLeft_Fast', 'Drehen Links: Schnell');
             }
         }
