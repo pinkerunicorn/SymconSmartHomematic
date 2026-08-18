@@ -112,6 +112,7 @@ class HmIP_WRC6 extends IPSModuleStrict
         parent::ApplyChanges();
         
         $this->DA_ApplyPresentation();
+        $this->DR_Register('DevicesWallSwitch');
 
         // Validierung
         $hasInstance = false;
@@ -233,9 +234,6 @@ class HmIP_WRC6 extends IPSModuleStrict
 
         $this->SetStatus(102);
 
-        $this->DR_Register('DevicesWallSwitch', [
-            'Reachable_VarID' => $this->GetIDForIdent('DeviceAvailable'),
-        ]);
     }
 
     /**

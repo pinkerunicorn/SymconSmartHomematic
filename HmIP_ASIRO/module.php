@@ -142,6 +142,7 @@ class HmIP_ASIRO extends IPSModuleStrict
     public function ApplyChanges(): void
     {
         parent::ApplyChanges();
+        $this->DR_Register('DevicesAlarmSensor');
 
         // Validierung
         if ($this->ReadPropertyInteger('SirenInstanceID') <= 0) {
@@ -172,9 +173,6 @@ class HmIP_ASIRO extends IPSModuleStrict
 
         $this->SetStatus(102);
 
-        $this->DR_Register('DevicesAlarmSensor', [
-            'Reachable_VarID' => $this->GetIDForIdent('DeviceAvailable'),
-        ]);
     }
 
     public function RequestAction(string $Ident, mixed $Value): void

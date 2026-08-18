@@ -120,6 +120,7 @@ class HmIP_MP3P extends IPSModuleStrict
         parent::ApplyChanges();
         
         $this->DA_ApplyPresentation();
+        $this->DR_Register('DevicesGenericSensor');
 
         // Validierung
         if ($this->ReadPropertyInteger('SoundInstanceID') <= 0 && $this->ReadPropertyInteger('LightInstanceID') <= 0) {
@@ -155,9 +156,6 @@ class HmIP_MP3P extends IPSModuleStrict
 
         $this->SetStatus(102);
 
-        $this->DR_Register('DevicesGenericSensor', [
-            'Reachable_VarID' => $this->GetIDForIdent('DeviceAvailable'),
-        ]);
     }
 
     public function RequestAction(string $Ident, mixed $Value): void

@@ -44,6 +44,7 @@ class HmIP_WRCR extends IPSModuleStrict
         parent::ApplyChanges();
         
         $this->DA_ApplyPresentation();
+        $this->DR_Register('DevicesWallSwitch');
 
         // Validierung
         if ($this->ReadPropertyInteger('Channel1_InstID') <= 0 && 
@@ -135,9 +136,6 @@ class HmIP_WRCR extends IPSModuleStrict
 
         $this->SetStatus(102);
 
-        $this->DR_Register('DevicesWallSwitch', [
-            'Reachable_VarID' => $this->GetIDForIdent('DeviceAvailable'),
-        ]);
     }
 
     private function SubscribeChannel(int $instID): void
