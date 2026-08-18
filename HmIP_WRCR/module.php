@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/Trait_SmartLog.php';
 require_once __DIR__ . '/../libs/Trait_DeviceAvailability.php';
+require_once __DIR__ . '/../libs/Trait_DeviceRegistration.php';
 
 /**
  * HmIP_WRCR – Abstraktionsschicht für den HomeMatic IP Drehtaster (HmIP-WRCR)
@@ -16,6 +17,7 @@ class HmIP_WRCR extends IPSModuleStrict
 {
     use SmartLog_Trait;
     use DeviceAvailability_Trait;
+    use DeviceRegistration_Trait;
 
     public function Create(): void
     {
@@ -132,6 +134,10 @@ class HmIP_WRCR extends IPSModuleStrict
         }
 
         $this->SetStatus(102);
+
+        $this->DR_Register('DevicesWallSwitch', [
+            'Reachable_VarID' => $this->GetIDForIdent('DeviceAvailable'),
+        ]);
     }
 
     private function SubscribeChannel(int $instID): void
