@@ -100,6 +100,7 @@ class HmIP_MP3P extends IPSModuleStrict
         ], 4);
 
         $this->RegisterVariableInteger('LightColor', 'LED Farbe', [
+            'ICON' => 'palette',
             'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
             'OPTIONS'      => json_encode([
                 ['Value' => 0, 'Caption' => 'Aus',      'IconActive' => false, 'IconValue' => '', 'Color' => 0x000000],

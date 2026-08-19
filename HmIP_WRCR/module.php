@@ -92,9 +92,8 @@ class HmIP_WRCR extends IPSModuleStrict
             ]
         ]);
 
-        $customPresentation = [
+        $basePresentation = [
             'PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION,
-            'ICON' => '',
             'OPTIONS' => $options
         ];
 
@@ -103,8 +102,8 @@ class HmIP_WRCR extends IPSModuleStrict
         if ($ch1 > 1 && @IPS_InstanceExists($ch1)) {
             $this->RegisterReference($ch1);
             $this->SubscribeChannel($ch1);
-            $this->RegisterVariableBoolean('Button_Short', 'Taste: Kurzer Druck', $customPresentation, 1);
-            $this->RegisterVariableBoolean('Button_Long', 'Taste: Langer Druck', $customPresentation, 2);
+            $this->RegisterVariableBoolean('Button_Short', 'Taste: Kurzer Druck', array_merge($basePresentation, ['ICON' => 'circle-dot']), 1);
+            $this->RegisterVariableBoolean('Button_Long', 'Taste: Langer Druck', array_merge($basePresentation, ['ICON' => 'circle-dot']), 2);
         } else {
             $this->UnregisterVariable('Button_Short');
             $this->UnregisterVariable('Button_Long');
@@ -115,8 +114,8 @@ class HmIP_WRCR extends IPSModuleStrict
         if ($ch2 > 1 && @IPS_InstanceExists($ch2)) {
             $this->RegisterReference($ch2);
             $this->SubscribeChannel($ch2);
-            $this->RegisterVariableBoolean('TurnRight_Slow', 'Drehen Rechts: Langsam', $customPresentation, 3);
-            $this->RegisterVariableBoolean('TurnRight_Fast', 'Drehen Rechts: Schnell', $customPresentation, 4);
+            $this->RegisterVariableBoolean('TurnRight_Slow', 'Drehen Rechts: Langsam', array_merge($basePresentation, ['ICON' => 'arrow-rotate-right']), 3);
+            $this->RegisterVariableBoolean('TurnRight_Fast', 'Drehen Rechts: Schnell', array_merge($basePresentation, ['ICON' => 'forward']), 4);
         } else {
             $this->UnregisterVariable('TurnRight_Slow');
             $this->UnregisterVariable('TurnRight_Fast');
@@ -127,8 +126,8 @@ class HmIP_WRCR extends IPSModuleStrict
         if ($ch3 > 1 && @IPS_InstanceExists($ch3)) {
             $this->RegisterReference($ch3);
             $this->SubscribeChannel($ch3);
-            $this->RegisterVariableBoolean('TurnLeft_Slow', 'Drehen Links: Langsam', $customPresentation, 5);
-            $this->RegisterVariableBoolean('TurnLeft_Fast', 'Drehen Links: Schnell', $customPresentation, 6);
+            $this->RegisterVariableBoolean('TurnLeft_Slow', 'Drehen Links: Langsam', array_merge($basePresentation, ['ICON' => 'arrow-rotate-left']), 5);
+            $this->RegisterVariableBoolean('TurnLeft_Fast', 'Drehen Links: Schnell', array_merge($basePresentation, ['ICON' => 'backward']), 6);
         } else {
             $this->UnregisterVariable('TurnLeft_Slow');
             $this->UnregisterVariable('TurnLeft_Fast');
