@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/Trait_SmartLog.php';
 require_once __DIR__ . '/../libs/Trait_DeviceAvailability.php';
-require_once __DIR__ . '/../libs/Trait_DeviceRegistration.php';
-
 /**
  * HmIP_WRC6 – Abstraktionsschicht für den HomeMatic IP Wandtaster 6-fach (HmIP-WRC6-230)
  *
@@ -49,8 +47,6 @@ class HmIP_WRC6 extends IPSModuleStrict
 {
     use SmartLog_Trait;
     use DeviceAvailability_Trait;
-    use DeviceRegistration_Trait;
-
     // Anzahl der Tasten / LED-Kanäle
     private const NUM_BUTTONS = 6;
 
@@ -112,8 +108,6 @@ class HmIP_WRC6 extends IPSModuleStrict
         parent::ApplyChanges();
         
         $this->DA_ApplyPresentation();
-        $this->DR_Register('DevicesWallSwitch');
-
         // Validierung
         $hasInstance = false;
         for ($i = 1; $i <= self::NUM_BUTTONS; $i++) {

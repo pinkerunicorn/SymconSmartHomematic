@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/Trait_SmartLog.php';
 require_once __DIR__ . '/../libs/Trait_DeviceAvailability.php';
-require_once __DIR__ . '/../libs/Trait_DeviceRegistration.php';
-
 /**
  * HmIP_MP3P – Abstraktionsschicht für den HomeMatic IP Musikgong (HmIP-MP3P)
  *
@@ -33,8 +31,6 @@ class HmIP_MP3P extends IPSModuleStrict
 {
     use SmartLog_Trait;
     use DeviceAvailability_Trait;
-    use DeviceRegistration_Trait;
-
     // Farb-Konstanten für SetLight
     public const COLOR_OFF     = 0;
     public const COLOR_BLUE    = 1;
@@ -121,8 +117,6 @@ class HmIP_MP3P extends IPSModuleStrict
         parent::ApplyChanges();
         
         $this->DA_ApplyPresentation();
-        $this->DR_Register('DevicesGenericSensor');
-
         // Validierung
         if ($this->ReadPropertyInteger('SoundInstanceID') <= 0 && $this->ReadPropertyInteger('LightInstanceID') <= 0) {
             $this->SetStatus(104);

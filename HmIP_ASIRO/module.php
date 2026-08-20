@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../libs/Trait_SmartLog.php';
 require_once __DIR__ . '/../libs/Trait_DeviceAvailability.php';
-require_once __DIR__ . '/../libs/Trait_DeviceRegistration.php';
-
 /**
  * HmIP_ASIRO – Abstraktionsschicht für die HomeMatic IP Außensirene (HmIP-ASIR-O / HmIP-ASIR)
  *
@@ -19,8 +17,6 @@ class HmIP_ASIRO extends IPSModuleStrict
 {
     use SmartLog_Trait;
     use DeviceAvailability_Trait;
-    use DeviceRegistration_Trait;
-
     // Akustik-Konstanten
     public const ACOUSTIC_OFF                  = 0;
     public const ACOUSTIC_FREQ_RISING          = 1;
@@ -142,8 +138,6 @@ class HmIP_ASIRO extends IPSModuleStrict
     public function ApplyChanges(): void
     {
         parent::ApplyChanges();
-        $this->DR_Register('DevicesAlarmSensor');
-
         // Validierung
         if ($this->ReadPropertyInteger('SirenInstanceID') <= 0) {
             $this->SetStatus(104);
